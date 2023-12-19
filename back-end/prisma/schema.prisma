@@ -1,0 +1,80 @@
+  generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model admin {
+  id    BigInt @id @default(autoincrement())
+  name  String
+  email String
+  pass  String
+}
+
+model posts {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  description String
+  date_time   String
+  pic         String[]
+  likes       String[]
+  comments    String[]
+  premiem     Boolean
+  userid      String?
+  users       users?   @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id         String   @id @default(dbgenerated("gen_random_uuid()"))
+  username   String
+  firstname  String
+  lastname   String
+  email      String
+  profilepic String
+  premium    Boolean
+  followers  String[]
+  birthday   String
+  follows    String[]
+  posts      posts[]
+}
+
+model comments {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  comment String?
+  userid  String?
+  postid  String?
+}
+
+model follows {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  current_user_ids String[]
+  foreign_user_ids String[]
+}
+
+model chat {
+  id            String   @id @default(dbgenerated("gen_random_uuid()"))
+  users         String[]
+  latestmessage String?
+}
+
+model messages {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sender  String?
+  content String?
+  chat    String?
+}
+
+model search_history {
+  id                Int     @id @default(autoincrement())
+  search_history_id String? @db.VarChar(255)
+  user_id           String? @db.VarChar(255)
+}
+
+model likes {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userid String? @db.VarChar
+  postid String? @db.VarChar
+}
